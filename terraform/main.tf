@@ -36,10 +36,10 @@ resource "aws_instance" "app_node" {
 
   user_data = <<-EOF
               #!/bin/bash
-              # Install Docker
               apt-get update -y
               apt-get install -y docker.io
-              sudo usermod -aG docker ec2-user
+              sudo usermod -aG docker ubuntu
+              docker run -d -p 8080:8080 ghcr.io/draju1980/gohelloworld:main
               EOF
 
   tags = {
@@ -47,20 +47,5 @@ resource "aws_instance" "app_node" {
   }
 }
 
-# docker pull ghcr.io/draju1980/gohelloworld:main
-# docker run -d -p 8080:8080 ghcr.io/draju1980/gohelloworld:main
-
-provider "docker" {
-  host = "tcp://{{ aws_instance.app_node.public_ip }}:2375"  
-}
-
-
-resource "docker_container" "helloworld" {
-  name  = "go-helloworld"
-  image = "ghcr.io/draju1980/gohelloworld:main" 
-
-  ports {
-    internal = 8080
-    external = 8080  
-  }
-}
+// # docker pull ghcr.io/draju1980/gohelloworld:main
+// # docker run -d -p 8080:8080 ghcr.io/draju1980/gohelloworld:main
